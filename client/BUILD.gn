@@ -1,0 +1,33 @@
+import("//build/config/android/rules.gni")
+
+group("client") {
+  deps = [ ":axa_client_apk" ]
+}
+
+android_apk("axa_client_apk") {
+  apk_name = "AxaClient"
+  android_manifest = "AndroidManifest.xml"
+  deps = [
+    ":src_java",
+  ]
+}
+
+android_resources("res_java") {
+  android_manifest = "AndroidManifest.xml"
+  resource_dirs = [ "//axa/client/res" ]
+  deps = [
+    "//third_party/android_deps:com_android_support_appcompat_v7_java",
+  ]
+}
+
+android_library("src_java") {
+  java_src_dir = "//axa/client/src"
+  java_files = [
+    "$java_src_dir/org/chromium/axa_client/MainActivity.java",
+  ]
+  deps = [
+    ":res_java",
+    "//base:base_java",
+  ]
+}
+

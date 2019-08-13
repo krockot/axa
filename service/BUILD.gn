@@ -1,0 +1,32 @@
+import("//build/config/android/rules.gni")
+
+group("service") {
+  deps = [ ":axa_service_apk" ]
+}
+
+android_apk("axa_service_apk") {
+  apk_name = "AxaService"
+  android_manifest = "AndroidManifest.xml"
+  deps = [
+    ":src_java",
+  ]
+}
+
+android_resources("res_java") {
+  android_manifest = "AndroidManifest.xml"
+  resource_dirs = [ "//axa/service/res" ]
+  deps = [
+    "//third_party/android_deps:com_android_support_appcompat_v7_java",
+  ]
+}
+android_library("src_java") {
+  java_src_dir = "//axa/service/src"
+  java_files = [
+    "$java_src_dir/org/chromium/axa_service/Notifier.java",
+  ]
+  deps = [
+    ":res_java",
+    "//base:base_java",
+  ]
+}
+

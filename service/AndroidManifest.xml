@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.chromium.axa_service">
+  <application android:label="App-to-App Demo Service">
+    <service
+        android:name=".Notifier"
+        android:exported="true"/>
+  </application>
+</manifest>
