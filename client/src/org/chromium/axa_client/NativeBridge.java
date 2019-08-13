@@ -7,13 +7,23 @@ import org.chromium.base.annotations.NativeMethods;
 public final class NativeBridge {
   private NativeBridge() {}
 
-  public static void initRuntime() {
-    NativeBridgeJni.get().initRuntime();
+  public static int initRuntime() {
+    return NativeBridgeJni.get().initRuntime();
+  }
+
+  public static void moarInit() {
+    NativeBridgeJni.get().moarInit();
+  }
+
+  public static void notify(String text) {
+    NativeBridgeJni.get().notify(text);
   }
 
   @NativeMethods
   interface Natives {
-    void initRuntime();
+    int initRuntime();
+    void moarInit();
+    void notify(String text);
   }
 }
 

@@ -1,0 +1,8 @@
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  sources = [
+    "mini_chrome.mojom",
+  ]
+}
+

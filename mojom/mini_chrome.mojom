@@ -1,0 +1,10 @@
+module mini.mojom;
+
+interface MiniChrome {
+  BindNotifier(pending_receiver<Notifier> receiver);
+};
+
+interface Notifier {
+  Notify(string text);
+};
+

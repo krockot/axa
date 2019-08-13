@@ -23,8 +23,8 @@ android_resources("res_java") {
 }
 android_library("src_java") {
   java_files = [
+    "src/org/chromium/axa_service/Listener.java",
     "src/org/chromium/axa_service/NativeBridge.java",
-    "src/org/chromium/axa_service/Notifier.java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   deps = [
@@ -47,11 +47,18 @@ generate_jni("jni_headers") {
 shared_library("native_library") {
   output_name = "axa_service_native"
   sources = [
+    "mini_chrome.cc",
+    "mini_chrome.h",
     "native_bridge.cc",
   ]
   deps = [
     ":jni_headers",
+    "//axa/mojom",
     "//base",
+    "//mojo/core/embedder",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/platform",
+    "//mojo/public/cpp/system",
   ]
 
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]

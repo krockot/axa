@@ -10,6 +10,8 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.os.Parcelable;
+import android.os.ParcelFileDescriptor;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -40,6 +42,19 @@ public final class MainActivity
       @Override
       public void onServiceConnected(ComponentName name, IBinder service) {
         mMessenger = new Messenger(service);
+        Message msg = Message.obtain(null, 1, 0, 0);
+        Bundle bundle = new Bundle();
+        Parcelable[] parcels = new Parcelable[1];
+        parcels[0] = ParcelFileDescriptor.adoptFd(NativeBridge.initRuntime());
+        bundle.putParcelableArray("channel", parcels);
+        msg.setData(bundle);
+        try {
+          mMessenger.send(msg);
+        } catch (RemoteException e) {
+          e.printStackTrace();
+        }
+
+        NativeBridge.moarInit();
       }
 
       @Override
@@ -48,33 +63,21 @@ public final class MainActivity
       }
     };
 
-    Intent intent = new Intent();
-    intent.setClassName("org.chromium.axa_service",
-                        "org.chromium.axa_service.Notifier");
-    bindService(intent, mService, Context.BIND_AUTO_CREATE);
-
     try {
       LibraryLoader.getInstance().ensureInitialized(LibraryProcessType.PROCESS_BROWSER);
     } catch (ProcessInitException e) {
       e.printStackTrace();
     }
 
-    NativeBridge.initRuntime();
+    Intent intent = new Intent();
+    intent.setClassName("org.chromium.axa_service",
+                        "org.chromium.axa_service.Listener");
+    bindService(intent, mService, Context.BIND_AUTO_CREATE);
   }
 
   @Override
   public void onClick(View view) {
-    if (mMessenger == null)
-      return;
-    Message msg = Message.obtain(null, 1, 0, 0);
-    Bundle bundle = new Bundle();
-    bundle.putString("text", mText.getText().toString());
-    msg.setData(bundle);
-    try {
-      mMessenger.send(msg);
-    } catch (RemoteException e) {
-      e.printStackTrace();
-    }
+    NativeBridge.notify(mText.getText().toString());
   }
 }
 

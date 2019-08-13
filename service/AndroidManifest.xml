@@ -4,7 +4,7 @@
     package="org.chromium.axa_service">
   <application android:label="App-to-App Demo Service">
     <service
-        android:name=".Notifier"
+        android:name=".Listener"
         android:exported="true"/>
   </application>
 </manifest>
