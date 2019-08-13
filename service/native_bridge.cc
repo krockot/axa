@@ -5,7 +5,6 @@
 #include "base/android/base_jni_onload.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/bind.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/message_loop/message_loop.h"

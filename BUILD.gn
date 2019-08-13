@@ -1,7 +1,6 @@
 import("//build/config/android/rules.gni")
 
 group("axa") {
-  testonly = true
   deps = [
     "//axa/client",
     "//axa/service",
