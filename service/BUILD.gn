@@ -1,10 +1,12 @@
 import("//build/config/android/rules.gni")
 
 group("service") {
+  testonly = true
   deps = [ ":axa_service_apk" ]
 }
 
 android_apk("axa_service_apk") {
+  testonly = true
   apk_name = "AxaService"
   android_manifest = "AndroidManifest.xml"
   deps = [
@@ -22,6 +24,7 @@ android_resources("res_java") {
   ]
 }
 android_library("src_java") {
+  testonly = true
   java_files = [
     "src/org/chromium/axa_service/Listener.java",
     "src/org/chromium/axa_service/NativeBridge.java",
@@ -32,6 +35,7 @@ android_library("src_java") {
     ":res_java",
     "//base:base_java",
     "//base:jni_java",
+    "//net/android:net_java",
   ]
 }
 
@@ -45,6 +49,7 @@ generate_jni("jni_headers") {
 }
 
 shared_library("native_library") {
+  testonly = true
   output_name = "axa_service_native"
   sources = [
     "mini_chrome.cc",
@@ -59,6 +64,9 @@ shared_library("native_library") {
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
+    "//services/network:network_service",
+    "//services/network:test_support",
+    "//services/network/public/mojom",
   ]
 
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]

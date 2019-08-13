@@ -2,6 +2,7 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.chromium.axa_service">
+  <uses-permission android:name="android.permission.INTERNET" />
   <application android:label="App-to-App Demo Service">
     <service
         android:name=".Listener"

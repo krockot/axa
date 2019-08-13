@@ -1,7 +1,11 @@
 module mini.mojom;
 
+import "services/network/public/mojom/url_loader_factory.mojom";
+
 interface MiniChrome {
   BindNotifier(pending_receiver<Notifier> receiver);
+  BindUrlLoaderFactory(
+      pending_receiver<network.mojom.URLLoaderFactory> receiver);
 };
 
 interface Notifier {

@@ -1,5 +1,7 @@
 package org.chromium.axa_client;
 
+import java.lang.String;
+
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -22,11 +24,12 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.library_loader.ProcessInitException;
 
-public final class MainActivity
-    extends Activity
-    implements View.OnClickListener {
-  private Button mButton;
-  private EditText mText;
+public final class MainActivity extends Activity {
+  private EditText mNotifyText;
+  private Button mNotifyButton;
+  private EditText mUrlText;
+  private Button mFetchButton;
+  private TextView mFetchedText;
   private ServiceConnection mService;
   private Messenger mMessenger;
 
@@ -35,9 +38,24 @@ public final class MainActivity
     super.onCreate(savedInstanceState);
     ContextUtils.initApplicationContext(this);
     setContentView(R.layout.activity_main);
-    mButton = findViewById(R.id.button);
-    mButton.setOnClickListener(this);
-    mText = findViewById(R.id.text);
+    mNotifyText = findViewById(R.id.notify_text);
+    mNotifyButton = findViewById(R.id.notify_button);
+    mNotifyButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        NativeBridge.notify(mNotifyText.getText().toString());
+      }
+    });
+    mUrlText = findViewById(R.id.url_text);
+    mFetchButton = findViewById(R.id.fetch_button);
+    mFetchedText = findViewById(R.id.fetched_text);
+    mFetchButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        NativeBridge.fetchUrl(mUrlText.getText().toString());
+      }
+    });
+
     mService = new ServiceConnection() {
       @Override
       public void onServiceConnected(ComponentName name, IBinder service) {
@@ -75,9 +93,8 @@ public final class MainActivity
     bindService(intent, mService, Context.BIND_AUTO_CREATE);
   }
 
-  @Override
-  public void onClick(View view) {
-    NativeBridge.notify(mText.getText().toString());
+  public void updateFetchedText(String text) {
+    mFetchedText.setText(text);
   }
 }
 

@@ -4,5 +4,9 @@ mojom("mojom") {
   sources = [
     "mini_chrome.mojom",
   ]
+
+  public_deps = [
+    "//services/network/public/mojom",
+  ]
 }
 

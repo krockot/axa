@@ -5,9 +5,11 @@
 #include "base/android/base_jni_onload.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/bind.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/message_loop/message_loop.h"
+#include "base/task/thread_pool/thread_pool.h"
 #include "base/threading/thread.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
@@ -16,17 +18,23 @@
 
 namespace axa_service {
 
+base::Thread& GetIOThread() {
+  static base::NoDestructor<base::Thread> io_thread{"io thread"};
+  return *io_thread;
+}
+
 void JNI_NativeBridge_InitRuntime(JNIEnv* env) {
   mojo::core::Init();
 
   static base::NoDestructor<base::MessageLoop> loop{base::MessagePumpType::UI};
 
-  static base::NoDestructor<base::Thread> io_thread{"io thread"};
-  io_thread->StartWithOptions({base::MessagePumpType::IO, 0});
+  GetIOThread().StartWithOptions({base::MessagePumpType::IO, 0});
 
   static base::NoDestructor<mojo::core::ScopedIPCSupport> ipc_support{
-    io_thread->task_runner(),
+    GetIOThread().task_runner(),
     mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST};
+
+  base::ThreadPoolInstance::CreateAndStartWithDefaultParams("THREADS!");
 }
 
 void JNI_NativeBridge_InviteMojoClient(JNIEnv* env, jint fd) {
@@ -36,6 +44,7 @@ void JNI_NativeBridge_InviteMojoClient(JNIEnv* env, jint fd) {
   auto pipe = invitation.AttachMessagePipe(0);
   mojo::OutgoingInvitation::Send(
       std::move(invitation), base::kNullProcessHandle, std::move(endpoint));
+
   BindMiniChrome(std::move(pipe));
 }
 
