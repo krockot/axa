@@ -8,8 +8,10 @@ android_apk("axa_service_apk") {
   apk_name = "AxaService"
   android_manifest = "AndroidManifest.xml"
   deps = [
+    ":native_library",
     ":src_java",
   ]
+  shared_libraries = [ ":native_library" ]
 }
 
 android_resources("res_java") {
@@ -20,13 +22,39 @@ android_resources("res_java") {
   ]
 }
 android_library("src_java") {
-  java_src_dir = "//axa/service/src"
   java_files = [
-    "$java_src_dir/org/chromium/axa_service/Notifier.java",
+    "src/org/chromium/axa_service/NativeBridge.java",
+    "src/org/chromium/axa_service/Notifier.java",
   ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   deps = [
+    ":native_library",
     ":res_java",
     "//base:base_java",
+    "//base:jni_java",
   ]
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "src/org/chromium/axa_service/NativeBridge.java",
+  ]
+  deps = [
+    "//base:base_java",
+  ]
+}
+
+shared_library("native_library") {
+  output_name = "axa_service_native"
+  sources = [
+    "native_bridge.cc",
+  ]
+  deps = [
+    ":jni_headers",
+    "//base",
+  ]
+
+  configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
+  configs += [ "//build/config/android:hide_all_but_jni" ]
 }
 

@@ -15,6 +15,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.view.View;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.library_loader.LibraryProcessType;
+import org.chromium.base.library_loader.ProcessInitException;
+
 public final class MainActivity
     extends Activity
     implements View.OnClickListener {
@@ -26,6 +31,7 @@ public final class MainActivity
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    ContextUtils.initApplicationContext(this);
     setContentView(R.layout.activity_main);
     mButton = findViewById(R.id.button);
     mButton.setOnClickListener(this);
@@ -46,6 +52,14 @@ public final class MainActivity
     intent.setClassName("org.chromium.axa_service",
                         "org.chromium.axa_service.Notifier");
     bindService(intent, mService, Context.BIND_AUTO_CREATE);
+
+    try {
+      LibraryLoader.getInstance().ensureInitialized(LibraryProcessType.PROCESS_BROWSER);
+    } catch (ProcessInitException e) {
+      e.printStackTrace();
+    }
+
+    NativeBridge.initRuntime();
   }
 
   @Override
