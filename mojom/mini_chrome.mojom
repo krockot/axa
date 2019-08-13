@@ -5,6 +5,6 @@ interface MiniChrome {
 };
 
 interface Notifier {
-  Notify(string text);
+  Notify(handle<data_pipe_consumer> dataz);
 };
 

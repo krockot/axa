@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/system/data_pipe_utils.h"
 
 namespace {
 
@@ -28,7 +29,9 @@ class MiniChromeImpl
   }
 
   // mini::mojom::Notifier implementation:
-  void Notify(const std::string& text) override {
+  void Notify(mojo::ScopedDataPipeConsumerHandle consumer) override {
+    std::string text;
+    CHECK(mojo::BlockingCopyToString(std::move(consumer), &text));
     DoNotify(text);
   }
 

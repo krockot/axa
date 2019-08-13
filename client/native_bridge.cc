@@ -12,6 +12,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
+#include "mojo/public/cpp/system/data_pipe.h"
+#include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
 namespace {
@@ -58,9 +60,14 @@ void JNI_NativeBridge_MoarInit(JNIEnv* env) {
 
 void JNI_NativeBridge_Notify(JNIEnv* env,
                              const base::android::JavaParamRef<jstring>& text) {
+  // Convoluted use of data pipe to pass the string, just to exercise arbitrary
+  // system handle transit.
+  mojo::DataPipe pipe;
   mojo::Remote<mini::mojom::Notifier> notifier;
   GetMiniChromeRemote()->BindNotifier(notifier.BindNewPipeAndPassReceiver());
-  notifier->Notify(base::android::ConvertJavaStringToUTF8(env, text));
+  notifier->Notify(std::move(pipe.consumer_handle));
+  mojo::BlockingCopyFromString(
+      base::android::ConvertJavaStringToUTF8(env, text), pipe.producer_handle);
 }
 
 }  // namespace axa_client
